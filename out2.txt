@@ -1,0 +1,103 @@
+﻿node.exe : FAIL 
+test/basic.test.js
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (FAIL test/bas   
+ ic.test.js:String)    
+ [], RemoteExcepti    
+on
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  semanticRelay core 
+modules
+    ΓêÜ normalizer 
+extracts cleanly (6 ms)
+    ΓêÜ scorer logic 
+(1 ms)
+  semanticRelay 
+middleware
+    ├ù batches 
+requests correctly (6 
+ms)
+
+  ΓùÅ semanticRelay 
+middleware ΓÇ║ batches 
+requests correctly
+
+    expect(received).to
+HaveBeenCalledWith(...e
+xpected)
+
+    Matcher error: 
+received value must be 
+a mock or spy function
+
+    Received has type: 
+ function
+    Received has 
+value: [Function bound 
+mockConstructor]
+
+    [0m [90m 80 
+|[39m     
+[36mawait[39m ctx2[3
+3m.[39mjsonPromise[33
+m;[39m
+     [90m 81 |[39m   
+  
+    [31m[1m>[22m[39
+m[90m 82 |[39m     ex
+pect(ctx1[33m.[39mres
+[33m.[39mjson)[33m.
+[39mtoHaveBeenCalledWit
+h([{ id[33m:[39m 
+[35m1[39m 
+}[33m,[39m { 
+id[33m:[39m 
+[35m2[39m 
+}])[33m;[39m
+     [90m    |[39m   
+                       
+ [31m[1m^[22m[39m
+     [90m 83 |[39m   
+  expect(ctx2[33m.[39
+mres[33m.[39mjson)[3
+3m.[39mtoHaveBeenCalle
+dWith([{ id[33m:[39m 
+[35m3[39m 
+}[33m,[39m { 
+id[33m:[39m 
+[35m4[39m 
+}])[33m;[39m
+     [90m 84 |[39m   
+  
+     [90m 85 |[39m   
+  [36mconst[39m 
+metrics [33m=[39m mw
+[33m.[39mgetMetrics()
+[33m;[39m[0m
+
+      at Object.toHaveB
+eenCalledWith (test/bas
+ic.test.js:82:27)
+
+Test Suites: 1 failed, 
+1 total
+Tests:       1 failed, 
+2 passed, 3 total
+Snapshots:   0 total
+Time:        0.57 s, 
+estimated 1 s
+Ran all test suites.
