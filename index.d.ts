@@ -71,6 +71,16 @@ export interface SemanticRelayOptions {
   onAggregate?: (group: SemanticRelayContext[]) => void;
   onFallback?: (req: RelayRequest) => void;
   window?: WindowAdapter;
+  /** Query param holding the page number. Default 'page'. */
+  pageParam?: string;
+  /** Query param holding the page size. Default 'limit'. */
+  limitParam?: string;
+  /**
+   * If provided, ONLY these query params are treated as filters. Otherwise
+   * every param except the page/limit params is treated as a filter (the safe
+   * default — requests differing in any param are never merged).
+   */
+  filterFields?: string[] | null;
 }
 
 export interface SemanticRelayMetrics {
@@ -82,8 +92,21 @@ export interface SemanticRelayMetrics {
   reductionPercent: number;
 }
 
+/**
+ * The effective query a route handler should run, with the leader/follower
+ * fallback already applied.
+ */
+export interface ResolvedQuery {
+  filter: Record<string, unknown>;
+  skip: number;
+  limit: number;
+  aggregated: boolean;
+  groupSize: number;
+}
+
 export interface SemanticRelayMiddleware extends RequestHandler {
   getMetrics(): SemanticRelayMetrics;
+  resolve(req: RelayRequest): ResolvedQuery;
 }
 
 export class MemoryWindow implements WindowAdapter {
@@ -94,5 +117,11 @@ export class MemoryWindow implements WindowAdapter {
 }
 
 export function semanticRelay(options?: SemanticRelayOptions): SemanticRelayMiddleware;
+
+/**
+ * Standalone form of the middleware's `resolve` helper. Returns the effective
+ * query for a request, applying the leader/follower fallback.
+ */
+export function resolve(req: RelayRequest): ResolvedQuery;
 
 export default semanticRelay;

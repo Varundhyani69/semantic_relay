@@ -14,7 +14,11 @@ function scorer(intentA, intentB) {
   const fA = stableStringify(intentA.filters);
   const fB = stableStringify(intentB.filters);
   
-  if (fA !== fB) return 0.3;
+  // Hard block: requests with different filters must never be grouped.
+  // The superset query is built from a single (leader) filter set, so
+  // merging mismatched filters would return incorrect data to followers.
+  // Returning 0 guarantees correctness regardless of the configured threshold.
+  if (fA !== fB) return 0;
   
   if (intentA.page === intentB.page) return 1.0;
   

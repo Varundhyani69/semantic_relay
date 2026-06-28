@@ -1,0 +1,13 @@
+{
+  "name": "semantic-relay-benchmark-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Benchmark suite and interactive demo comparing semantic-relay against industry-standard API efficiency strategies",
+  "scripts": {
+    "benchmark": "node runner.js",
+    "serve": "node serve.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

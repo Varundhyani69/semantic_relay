@@ -1,6 +1,6 @@
 {
   "name": "semantic-relay",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Express middleware to group similar GET requests and execute them as a superset query",
   "main": "src/index.js",
   "types": "index.d.ts",
@@ -8,6 +8,7 @@
     "src",
     "index.d.ts",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
@@ -25,9 +26,12 @@
   ],
   "author": "Varundhyani69",
   "license": "ISC",
+  "engines": {
+    "node": ">=14"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Varundhyani69/Semantic-Relay.git"
+    "url": "git+https://github.com/Varundhyani69/Semantic-Relay.git"
   },
   "bugs": {
     "url": "https://github.com/Varundhyani69/Semantic-Relay/issues"
@@ -37,6 +41,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "fast-check": "^4.8.0",
     "jest": "^29.7.0"
   }
 }

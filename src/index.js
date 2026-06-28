@@ -26,6 +26,72 @@ function invokeOriginal(res, method, data) {
   return method.call(res, data);
 }
 
+const parsePositiveInt = normalizer.parsePositiveInt;
+
+/**
+ * Returns the effective query a route handler should run, with the
+ * leader/follower fallback already applied, using the same normalization
+ * config as the grouping core so the two can never disagree.
+ *
+ * - When the request is a coalesced group leader, returns the merged superset
+ *   query ({ filter, skip, limit }) built by semantic-relay's core.
+ * - Otherwise (solo request, or a follower that fell back to normal execution),
+ *   derives the equivalent query from req.query using the same config.
+ *
+ * This is a read-only convenience over `req.semanticRelay`; it does not change
+ * any coalescing, superset, or partitioning behavior.
+ */
+function resolveWith(req, config) {
+  const agg = req && req.semanticRelay;
+
+  if (agg && agg.query) {
+    return {
+      filter: agg.query.filter,
+      skip: agg.query.skip,
+      limit: agg.query.limit,
+      aggregated: true,
+      groupSize: agg.groupSize
+    };
+  }
+
+  const cfg = config || {};
+  const pageParam = cfg.pageParam || 'page';
+  const limitParam = cfg.limitParam || 'limit';
+  const filterFields = cfg.filterFields || null;
+
+  const query = (req && req.query) || {};
+  const page = parsePositiveInt(query[pageParam], 1);
+  const limit = parsePositiveInt(query[limitParam], 20);
+
+  const filter = {};
+  if (filterFields) {
+    for (const key of filterFields) {
+      if (query[key] !== undefined) {
+        filter[key] = query[key];
+      }
+    }
+  } else {
+    for (const key in query) {
+      if (key !== pageParam && key !== limitParam) {
+        filter[key] = query[key];
+      }
+    }
+  }
+
+  return {
+    filter,
+    skip: (page - 1) * limit,
+    limit,
+    aggregated: false,
+    groupSize: agg ? agg.groupSize : 1
+  };
+}
+
+// Standalone export: uses default conventions (page/limit, all params as filter).
+function resolve(req) {
+  return resolveWith(req, {});
+}
+
 function semanticRelay(options = {}) {
   const {
     windowMs = 20,
@@ -34,8 +100,15 @@ function semanticRelay(options = {}) {
     responseTimeoutMs = 30000,
     onAggregate = () => {},
     onFallback = () => {},
-    window: windowAdapter = new MemoryWindow()
+    window: windowAdapter = new MemoryWindow(),
+    pageParam = 'page',
+    limitParam = 'limit',
+    filterFields = null
   } = options;
+
+  // Shared normalization config: used for grouping/superset AND resolve(), so
+  // the two can never disagree about pagination vs. filters.
+  const normConfig = { pageParam, limitParam, filterFields };
 
   let totalRequests = 0;
   let aggregatedRequests = 0;
@@ -188,7 +261,7 @@ function semanticRelay(options = {}) {
 
       totalRequests++;
 
-      const intent = normalizer(req);
+      const intent = normalizer(req, normConfig);
 
       let resolveDeferred, rejectDeferred;
       const deferred = new Promise((resolve, reject) => {
@@ -230,9 +303,12 @@ function semanticRelay(options = {}) {
     };
   };
 
+  middleware.resolve = (req) => resolveWith(req, normConfig);
+
   return middleware;
 }
 
 module.exports = semanticRelay;
 module.exports.semanticRelay = semanticRelay;
 module.exports.MemoryWindow = MemoryWindow;
+module.exports.resolve = resolve;

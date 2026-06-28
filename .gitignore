@@ -9,3 +9,14 @@ pnpm-debug.log*
 package-lock.json
 .vscode/
 .idea/
+.kiro/
+
+# build artifacts
+*.tgz
+
+# benchmark generated output
+benchmark-demo/results/
+benchmark-demo/web/data.js
+
+# stray local output
+out*.txt
